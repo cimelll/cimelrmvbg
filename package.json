@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@imgly/background-removal": "1.7.0"
+    "@imgly/background-removal": "1.7.0",
+    "onnxruntime-web": "1.21.0"
   }
 }
