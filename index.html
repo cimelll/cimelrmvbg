@@ -15,17 +15,17 @@
       min-height: 100vh;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #fff0f7, #f4eaff);
+      color: #29202b;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px;
-      color: #29202b;
     }
 
     .box {
       width: 100%;
       max-width: 600px;
-      background: rgba(255,255,255,.9);
+      background: rgba(255,255,255,.94);
       border-radius: 28px;
       padding: 30px 22px;
       text-align: center;
@@ -47,6 +47,7 @@
     }
 
     .upload {
+      display: block;
       border: 2px dashed #e58abb;
       border-radius: 22px;
       padding: 40px 20px;
@@ -56,15 +57,32 @@
     }
 
     .upload:hover {
-      transform: scale(1.01);
       background: #fff1f8;
+      transform: scale(1.01);
     }
 
     .icon {
       font-size: 50px;
+      margin-bottom: 10px;
     }
 
-    button {
+    .upload-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .upload-text {
+      color: #999;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    button,
+    .download {
       border: 0;
       border-radius: 14px;
       padding: 13px 24px;
@@ -72,17 +90,16 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 18px;
-      background: #e94f9b;
       color: white;
     }
 
-    button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
+    #removeBtn {
+      background: #e94f9b;
     }
 
-    #fileInput {
-      display: none;
+    #removeBtn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
     }
 
     #preview,
@@ -96,19 +113,21 @@
 
     #status {
       margin-top: 18px;
+      min-height: 24px;
       color: #777;
-      min-height: 22px;
+      font-size: 14px;
+    }
+
+    .result-title {
+      display: none;
+      margin-top: 25px;
+      font-weight: bold;
     }
 
     .download {
       display: none;
       background: #7b4de8;
       text-decoration: none;
-      color: white;
-      padding: 13px 22px;
-      border-radius: 14px;
-      font-weight: bold;
-      margin-top: 15px;
     }
   </style>
 </head>
@@ -116,22 +135,34 @@
 <body>
 
   <div class="box">
-    <h1>cimel <span class="pink">remove bg</span> ✨</h1>
-    <p class="sub">hapus background foto dengan gampang</p>
+
+    <h1>
+      cimel <span class="pink">remove bg</span> ✨
+    </h1>
+
+    <p class="sub">
+      hapus background foto dengan gampang
+    </p>
 
     <label class="upload" for="fileInput">
       <div class="icon">🖼️</div>
-      <b>pilih foto</b>
-      <div style="color:#999;margin-top:8px">
+
+      <div class="upload-title">
+        pilih foto
+      </div>
+
+      <div class="upload-text">
         klik di sini untuk upload gambar
       </div>
     </label>
 
-    <input id="fileInput" type="file" accept="image/*">
+    <input
+      id="fileInput"
+      type="file"
+      accept="image/*"
+    >
 
-    <img id="preview">
-
-    <br>
+    <img id="preview" alt="preview">
 
     <button id="removeBtn" disabled>
       ✨ hapus background
@@ -139,13 +170,22 @@
 
     <div id="status"></div>
 
-    <img id="result">
+    <div id="resultTitle" class="result-title">
+      hasil foto kamu ✨
+    </div>
+
+    <img id="result" alt="hasil">
 
     <br>
 
-    <a id="downloadBtn" class="download" download="cimel-remove-bg.png">
+    <a
+      id="downloadBtn"
+      class="download"
+      download="cimel-remove-bg.png"
+    >
       ⬇️ download hasil
     </a>
+
   </div>
 
 <script>
@@ -155,13 +195,23 @@
   const removeBtn = document.getElementById("removeBtn");
   const status = document.getElementById("status");
   const downloadBtn = document.getElementById("downloadBtn");
+  const resultTitle = document.getElementById("resultTitle");
 
   let selectedFile = null;
+  let resultUrl = null;
 
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
+  fileInput.addEventListener("change", function () {
 
-    if (!file) return;
+    const file = this.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      status.textContent = "file harus berupa gambar";
+      return;
+    }
 
     selectedFile = file;
 
@@ -169,53 +219,95 @@
     preview.style.display = "block";
 
     result.style.display = "none";
+    resultTitle.style.display = "none";
     downloadBtn.style.display = "none";
 
-    removeBtn.disabled = false;
     status.textContent = "foto siap diproses ✨";
+    removeBtn.disabled = false;
   });
 
-  removeBtn.addEventListener("click", async () => {
-    if (!selectedFile) return;
+
+  removeBtn.addEventListener("click", async function () {
+
+    if (!selectedFile) {
+      return;
+    }
 
     removeBtn.disabled = true;
     status.textContent = "lagi menghapus background... ⏳";
 
     const formData = new FormData();
+
     formData.append("image", selectedFile);
 
+
     try {
+
       const response = await fetch("/api/remove-bg", {
         method: "POST",
         body: formData
       });
 
+
       if (!response.ok) {
-        let message = "gagal memproses foto";
+
+        let errorMessage = "gagal memproses foto";
 
         try {
-          const data = await response.json();
-          if (data.error) message = data.error;
-        } catch {}
 
-        throw new Error(message);
+          const data = await response.json();
+
+          if (data.error) {
+            errorMessage = data.error;
+          }
+
+          if (data.detail) {
+            console.error(data.detail);
+          }
+
+        } catch (e) {}
+
+        throw new Error(errorMessage);
       }
 
+
       const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
 
-      result.src = url;
+      if (!blob || blob.size === 0) {
+        throw new Error("hasil foto kosong");
+      }
+
+
+      if (resultUrl) {
+        URL.revokeObjectURL(resultUrl);
+      }
+
+      resultUrl = URL.createObjectURL(blob);
+
+      result.src = resultUrl;
+
       result.style.display = "block";
+      resultTitle.style.display = "block";
 
-      downloadBtn.href = url;
+      downloadBtn.href = resultUrl;
       downloadBtn.style.display = "inline-block";
 
-      status.textContent = "berhasil! background sudah dihapus ✨";
+      status.textContent =
+        "berhasil! background sudah dihapus ✨";
+
     } catch (error) {
-      status.textContent = "gagal: " + error.message;
+
+      console.error(error);
+
+      status.textContent =
+        "gagal: " + error.message;
+
+    } finally {
+
+      removeBtn.disabled = false;
+
     }
 
-    removeBtn.disabled = false;
   });
 </script>
 
