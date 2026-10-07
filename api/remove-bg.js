@@ -8,26 +8,49 @@ export default async function handler(request) {
       JSON.stringify({ error: "method not allowed" }),
       {
         status: 405,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
   }
 
   try {
+    const apiKey = process.env.REMOVE_BG_API_KEY;
+
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({
+          error: "REMOVE_BG_API_KEY belum terbaca di Vercel",
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
     const form = await request.formData();
     const image = form.get("image");
 
     if (!image) {
       return new Response(
-        JSON.stringify({ error: "gambar belum dikirim" }),
+        JSON.stringify({
+          error: "gambar belum dikirim",
+        }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
     }
 
     const removeBgForm = new FormData();
+
     removeBgForm.append("image_file", image);
     removeBgForm.append("size", "auto");
     removeBgForm.append("format", "png");
@@ -37,7 +60,7 @@ export default async function handler(request) {
       {
         method: "POST",
         headers: {
-          "X-Api-Key": process.env.REMOVE_BG_API_KEY,
+          "X-Api-Key": apiKey,
         },
         body: removeBgForm,
       }
@@ -48,34 +71,41 @@ export default async function handler(request) {
 
       return new Response(
         JSON.stringify({
-          error: "gagal menghapus background",
+          error: "remove.bg menolak permintaan",
           detail: errorText,
         }),
         {
           status: response.status,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
     }
 
-    const result = await response.arrayBuffer();
+    const imageData = await response.arrayBuffer();
 
-    return new Response(result, {
+    return new Response(imageData, {
       status: 200,
       headers: {
         "Content-Type": "image/png",
+        "Content-Disposition": "inline",
         "Cache-Control": "no-store",
       },
     });
+
   } catch (error) {
     return new Response(
       JSON.stringify({
-        error: error.message,
+        error: "server error",
+        detail: error.message,
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
   }
-        }
+      }
