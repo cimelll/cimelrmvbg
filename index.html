@@ -1,306 +1,222 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cimel Remove BG</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cimel Remove BG</title>
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-  min-height:100vh;
-  background:#05070a;
-  color:#fff;
-  font-family:Arial,sans-serif;
-  padding:25px 16px;
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fff0f7, #f4eaff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #29202b;
+    }
 
-.container{
-  width:min(680px,100%);
-  margin:auto;
-}
+    .box {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255,255,255,.9);
+      border-radius: 28px;
+      padding: 30px 22px;
+      text-align: center;
+      box-shadow: 0 15px 50px rgba(150,80,150,.15);
+    }
 
-header{
-  text-align:center;
-  padding:35px 0;
-}
+    h1 {
+      margin: 0;
+      font-size: 30px;
+    }
 
-.logo{
-  font-size:28px;
-  font-weight:800;
-}
+    .pink {
+      color: #e94f9b;
+    }
 
-.logo span{
-  color:#168cff;
-}
+    .sub {
+      color: #777;
+      margin: 10px 0 25px;
+    }
 
-.subtitle{
-  color:#7d8b9b;
-  margin-top:8px;
-  font-size:14px;
-}
+    .upload {
+      border: 2px dashed #e58abb;
+      border-radius: 22px;
+      padding: 40px 20px;
+      cursor: pointer;
+      background: #fff8fc;
+      transition: .2s;
+    }
 
-.box{
-  background:#0c1016;
-  border:1px solid #1b2430;
-  border-radius:22px;
-  padding:25px 20px;
-}
+    .upload:hover {
+      transform: scale(1.01);
+      background: #fff1f8;
+    }
 
-.upload{
-  display:block;
-  border:1px dashed #23669e;
-  border-radius:17px;
-  padding:45px 20px;
-  text-align:center;
-  cursor:pointer;
-}
+    .icon {
+      font-size: 50px;
+    }
 
-.icon{
-  width:60px;
-  height:60px;
-  margin:auto;
-  border-radius:17px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#10243a;
-  color:#168cff;
-  font-size:28px;
-}
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 18px;
+      background: #e94f9b;
+      color: white;
+    }
 
-h1{
-  font-size:23px;
-  margin-top:18px;
-}
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
 
-.desc{
-  color:#718092;
-  font-size:13px;
-  line-height:1.6;
-  margin:9px auto 20px;
-  max-width:420px;
-}
+    #fileInput {
+      display: none;
+    }
 
-.choose{
-  display:inline-block;
-  background:#168cff;
-  padding:13px 24px;
-  border-radius:10px;
-  font-size:13px;
-  font-weight:700;
-}
+    #preview,
+    #result {
+      max-width: 100%;
+      max-height: 400px;
+      margin: 20px auto 0;
+      border-radius: 18px;
+      display: none;
+    }
 
-input{
-  display:none;
-}
+    #status {
+      margin-top: 18px;
+      color: #777;
+      min-height: 22px;
+    }
 
-.preview{
-  display:none;
-  margin-top:20px;
-  padding:12px;
-  border-radius:14px;
-  background:
-    linear-gradient(45deg,#252a30 25%,transparent 25%),
-    linear-gradient(-45deg,#252a30 25%,transparent 25%),
-    linear-gradient(45deg,transparent 75%,#252a30 75%),
-    linear-gradient(-45deg,transparent 75%,#252a30 75%);
-  background-size:24px 24px;
-  background-position:0 0,0 12px,12px -12px,-12px 0;
-}
-
-.preview img{
-  width:100%;
-  max-height:450px;
-  object-fit:contain;
-  display:block;
-  border-radius:9px;
-}
-
-button,
-.download{
-  display:none;
-  width:100%;
-  margin-top:15px;
-  padding:15px;
-  border-radius:11px;
-  text-align:center;
-  font-weight:800;
-  font-size:13px;
-}
-
-button{
-  border:0;
-  background:#168cff;
-  color:white;
-  cursor:pointer;
-}
-
-button:disabled{
-  opacity:.55;
-}
-
-.download{
-  background:#151a21;
-  border:1px solid #23669e;
-  color:#168cff;
-  text-decoration:none;
-}
-
-.status{
-  text-align:center;
-  color:#718092;
-  font-size:12px;
-  margin-top:15px;
-}
-
-.success{
-  color:#39d98a;
-}
-
-.error{
-  color:#ff5c70;
-}
-
-footer{
-  text-align:center;
-  color:#3d4b5b;
-  font-size:11px;
-  margin-top:25px;
-}
-</style>
+    .download {
+      display: none;
+      background: #7b4de8;
+      text-decoration: none;
+      color: white;
+      padding: 13px 22px;
+      border-radius: 14px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="box">
+    <h1>cimel <span class="pink">remove bg</span> ✨</h1>
+    <p class="sub">hapus background foto dengan gampang</p>
 
-<header>
-  <div class="logo">Cimel<span>.</span>Remove BG</div>
-  <div class="subtitle">hapus background foto secara gratis</div>
-</header>
+    <label class="upload" for="fileInput">
+      <div class="icon">🖼️</div>
+      <b>pilih foto</b>
+      <div style="color:#999;margin-top:8px">
+        klik di sini untuk upload gambar
+      </div>
+    </label>
 
-<div class="box">
+    <input id="fileInput" type="file" accept="image/*">
 
-<label class="upload" for="imageInput">
+    <img id="preview">
 
-  <div class="icon">✦</div>
+    <br>
 
-  <h1>hapus background foto</h1>
+    <button id="removeBtn" disabled>
+      ✨ hapus background
+    </button>
 
-  <p class="desc">
-    pilih foto kamu dan cimel akan menghapus
-    background secara otomatis.
-  </p>
+    <div id="status"></div>
 
-  <span class="choose">PILIH FOTO</span>
+    <img id="result">
 
-</label>
+    <br>
 
-<input id="imageInput" type="file" accept="image/*">
+    <a id="downloadBtn" class="download" download="cimel-remove-bg.png">
+      ⬇️ download hasil
+    </a>
+  </div>
 
-<div class="preview" id="preview">
-  <img id="previewImage" alt="preview">
-</div>
+<script>
+  const fileInput = document.getElementById("fileInput");
+  const preview = document.getElementById("preview");
+  const result = document.getElementById("result");
+  const removeBtn = document.getElementById("removeBtn");
+  const status = document.getElementById("status");
+  const downloadBtn = document.getElementById("downloadBtn");
 
-<button id="processButton" type="button">
-  HAPUS BACKGROUND
-</button>
+  let selectedFile = null;
 
-<a
-  class="download"
-  id="downloadButton"
-  download="cimel-remove-bg.png"
->
-  DOWNLOAD PNG
-</a>
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
 
-<div class="status" id="status"></div>
+    if (!file) return;
 
-</div>
+    selectedFile = file;
 
-<footer>
-cimel remove bg
-</footer>
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
 
-</div>
+    result.style.display = "none";
+    downloadBtn.style.display = "none";
 
-<script type="module">
+    removeBtn.disabled = false;
+    status.textContent = "foto siap diproses ✨";
+  });
 
-import { removeBackground } from
-"https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm";
+  removeBtn.addEventListener("click", async () => {
+    if (!selectedFile) return;
 
-const input = document.getElementById("imageInput");
-const preview = document.getElementById("preview");
-const previewImage = document.getElementById("previewImage");
-const processButton = document.getElementById("processButton");
-const downloadButton = document.getElementById("downloadButton");
-const status = document.getElementById("status");
+    removeBtn.disabled = true;
+    status.textContent = "lagi menghapus background... ⏳";
 
-let file = null;
-let resultUrl = null;
+    const formData = new FormData();
+    formData.append("image", selectedFile);
 
-input.addEventListener("change", function(){
+    try {
+      const response = await fetch("/api/remove-bg", {
+        method: "POST",
+        body: formData
+      });
 
-  file = this.files[0];
+      if (!response.ok) {
+        let message = "gagal memproses foto";
 
-  if(!file) return;
+        try {
+          const data = await response.json();
+          if (data.error) message = data.error;
+        } catch {}
 
-  previewImage.src = URL.createObjectURL(file);
+        throw new Error(message);
+      }
 
-  preview.style.display = "block";
-  processButton.style.display = "block";
-  downloadButton.style.display = "none";
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
 
-  status.className = "status";
-  status.textContent = "foto siap diproses.";
+      result.src = url;
+      result.style.display = "block";
 
-});
+      downloadBtn.href = url;
+      downloadBtn.style.display = "inline-block";
 
-processButton.addEventListener("click", async function(){
-
-  if(!file) return;
-
-  processButton.disabled = true;
-  processButton.textContent = "MEMPROSES...";
-  status.className = "status";
-  status.textContent = "ai sedang bekerja...";
-
-  try{
-
-    const blob = await removeBackground(file);
-
-    if(resultUrl){
-      URL.revokeObjectURL(resultUrl);
+      status.textContent = "berhasil! background sudah dihapus ✨";
+    } catch (error) {
+      status.textContent = "gagal: " + error.message;
     }
 
-    resultUrl = URL.createObjectURL(blob);
-
-    previewImage.src = resultUrl;
-
-    downloadButton.href = resultUrl;
-    downloadButton.style.display = "block";
-
-    status.className = "status success";
-    status.textContent = "background berhasil dihapus.";
-
-    processButton.textContent = "SELESAI";
-
-  }catch(error){
-
-    console.error(error);
-
-    status.className = "status error";
-    status.textContent = "gagal memproses foto.";
-
-    processButton.disabled = false;
-    processButton.textContent = "COBA LAGI";
-
-  }
-
-});
-
+    removeBtn.disabled = false;
+  });
 </script>
 
 </body>
